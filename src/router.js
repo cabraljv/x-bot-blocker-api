@@ -18,8 +18,9 @@ router.post('/report', async (req, res) => {
 
   const reportsFromIpToAccount = await getCounter(`${ip}-${accountId}`);
   if(reportsFromIpToAccount) {
+    console.log('Account already reported from this ip', ip, accountId);
     return res.status(429).send({
-      response: 'Account already reported'
+      response: 'Account already reported from this ip'
     });
   }
 

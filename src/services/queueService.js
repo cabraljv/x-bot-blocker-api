@@ -1,4 +1,5 @@
 const Redis = require('ioredis');
+const md5 = require('md5');
 const redis = new Redis({
   port: 6379,
   host: process.env.REDIS_HOST || 'localhost',
@@ -21,7 +22,7 @@ exports.dequeueMany = async (queue, count) => {
 }
 
 exports.incrementCounter = async (key) => {
-  return redis.incr(key);
+  return redis.incr(md5(key));
 }
 
 exports.isItemInQueue = async (queue, item) => {
@@ -34,12 +35,12 @@ exports.deleteCounter = async (key) => {
 }
 
 exports.getCounter = async (key) => {
-  const value = await redis.get(key);
+  const value = await redis.get(md5(key));
   return value === null ? 0 : parseInt(value, 10);
 }
 
 exports.saveKeyWithExpire = async (key, value, expire) => {
-  await redis.set(key, value, 'EX', expire);
+  await redis.set(md5(key), value, 'EX', expire);
 }
 
 // Remove e retorna um item da fila
