@@ -37,7 +37,7 @@ services:
       - ./certbot-data:/data/letsencrypt
     depends_on:
       - nginx
-    command: certonly --webroot --webroot-path=/data/letsencrypt --email me@cabraljv.dev --agree-tos --no-eff-email --force-renewal -d labs.cabraljv.dev
+    command: certonly --webroot --webroot-path=/data/letsencrypt --email me@cabraljv.dev --agree-tos --no-eff-email -d labs.cabraljv.dev
   update-static-worker:
     build: 
       context: .
