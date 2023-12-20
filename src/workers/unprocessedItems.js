@@ -18,7 +18,7 @@ async function processItems() {
   // update reports
   for(const item of processedItems) {
     const existentItem = await getCounter(item.accountId);
-    if(existentItem>=3){
+    if(existentItem>=1){
       if(!(await isItemInQueue('accountsToCheck', item))) {
         await enqueue('accountsToCheck', item);
       }
