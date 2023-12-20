@@ -37,6 +37,11 @@ exports.getCounter = async (key) => {
   const value = await redis.get(key);
   return value === null ? 0 : parseInt(value, 10);
 }
+
+exports.saveKeyWithExpire = async (key, value, expire) => {
+  await redis.set(key, value, 'EX', expire);
+}
+
 // Remove e retorna um item da fila
 exports.dequeue = async (queue) => {
   return redis.lpop(queue).then(item => item ? JSON.parse(item) : null);

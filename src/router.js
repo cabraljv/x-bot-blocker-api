@@ -2,16 +2,30 @@ const express = require('express');
 const router = express.Router();
 
 const fs = require('fs');
-const { enqueue, getManyWithoutDequeue, dequeueSpecific } = require('./services/queueService');
+const { enqueue, getManyWithoutDequeue, dequeueSpecific, getCounter, saveKeyWithExpire } = require('./services/queueService');
 
 
 router.post('/report', async (req, res) => {
 
   // push to queue
   const { accountId } = req.body;
+
+  // get client ip
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
   if(!accountId) {
     return res.status(400).send();
   }
+
+  const reportsFromIpToAccount = await getCounter(`${ip}-${accountId}`);
+  if(reportsFromIpToAccount) {
+    return res.status(429).send({
+      response: 'Account already reported'
+    });
+  }
+
+  await saveKeyWithExpire(`${ip}-${accountId}`, 1, 60 * 60 * 24);
+
   await enqueue('unprocessedItems', { accountId });
 
   res.status(200).send({
