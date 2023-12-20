@@ -4,11 +4,6 @@ const router = express.Router();
 const fs = require('fs');
 const { enqueue, getManyWithoutDequeue, dequeueSpecific, getCounter, saveKeyWithExpire } = require('./services/queueService');
 
-router.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
-
 router.post('/report', async (req, res) => {
 
   // push to queue

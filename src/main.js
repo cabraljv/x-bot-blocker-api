@@ -3,12 +3,8 @@ const routes = require('./router');
 
 const app = express();
 const path = require('path')
-
-// fix cors
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
+const cors = require('cors');
+app.use(cors());
 
 
 app.use(express.json());
