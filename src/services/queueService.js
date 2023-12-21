@@ -47,9 +47,6 @@ exports.saveKeyWithExpire = async (key, value, expire) => {
 exports.dequeue = async (queue) => {
   return redis.lpop(queue).then(item => item ? JSON.parse(item) : null);
 }
-exports.getWithoutDequeue = async (queue) => {
-  return redis.lindex(queue, 0).then(item => item ? JSON.parse(item) : null);
-}
 
 exports.dequeueSpecific = async (queue, item) => {
   const items = await redis.lrange(queue, 0, -1); // Pega todos os itens da fila
@@ -60,15 +57,16 @@ exports.dequeueSpecific = async (queue, item) => {
   return item;
 }
 
-exports.getManyWithoutDequeue = async (queue, count) => {
-  const items = [];
-  for (let i = 0; i < count; i++) {
-    const item = await exports.getWithoutDequeue(queue);
-    if (!item) break;
-    if(items.includes(item)) continue;
-    items.push(item);
-  }
-  return items;
+
+exports.getWithoutDequeue = async (queue) => {
+  return redis.lindex(queue, 0).then(item => item ? JSON.parse(item) : null);
 }
+
+exports.getManyWithoutDequeue = async (queue, count) => {
+  // Use o comando lrange para obter vários itens da fila de uma vez
+  return redis.lrange(queue, 0, count - 1)
+    .then(items => items.map(item => JSON.parse(item)));
+}
+
 
 // Exemplo de uso: enqueue('unprocessedItems', { reportId: '123', ... });
